@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import styles from './Board.module.css';
-import Button from '../Button/Button';
-import Node from '../Nodes/Node';
-import Edge from '../Edges/Edge';
+import { useEffect, useState } from "react";
+import styles from "./Board.module.css";
+import Button from "../Button/Button";
+import Node from "../Nodes/Node";
+import Edge from "../Edges/Edge";
 
 const Board = () => {
   const [grabbingBoard, setGrabbingBoard] = useState(false);
@@ -12,6 +12,7 @@ const Board = () => {
   const [edges, setEdges] = useState([]);
   const [selectedPorts, setSelectedPorts] = useState([]);
   const [ghostEdge, setGhostEdge] = useState(null);
+  const [selectedEdge, setSelectedEdge] = useState(null); // Keep track of selected edge
 
   useEffect(() => {
     const boardElement = document.getElementById("board");
@@ -36,7 +37,7 @@ const Board = () => {
   }, [scale]);
 
   const handleOnMouseDown = (event) => {
-    if (!event.target.closest('.node')) {
+    if (!event.target.closest(".node")) {
       setGrabbingBoard(true);
       setClickedPosition({ x: event.clientX, y: event.clientY });
     }
@@ -51,7 +52,7 @@ const Board = () => {
     if (grabbingBoard && clickedPosition.x >= 0 && clickedPosition.y >= 0) {
       const dx = event.clientX - clickedPosition.x;
       const dy = event.clientY - clickedPosition.y;
-      const boardWrapperElement = document.getElementById('boardWrapper');
+      const boardWrapperElement = document.getElementById("boardWrapper");
       if (boardWrapperElement) {
         boardWrapperElement.scrollBy(-dx, -dy);
         setClickedPosition({ x: event.clientX, y: event.clientY });
@@ -130,8 +131,15 @@ const Board = () => {
       })
     );
   };
-  
-  
+
+  const handleEdgeClick = (index) => {
+    setSelectedEdge(index);
+  };
+
+  const handleDeleteEdge = (index) => {
+    setEdges((prevEdges) => prevEdges.filter((_, i) => i !== index));
+    setSelectedEdge(null);
+  };
 
   return (
     <div id="boardWrapper" className={styles.wrapper}>
@@ -155,9 +163,31 @@ const Board = () => {
           />
         ))}
         {edges.map((edge, index) => (
-          <Edge key={index} from={edge.from} to={edge.to} />
+          <Edge
+            key={index}
+            selected={selectedEdge === index}
+            isNew={false}
+            position={{
+              x0: edge.from.x,
+              y0: edge.from.y,
+              x1: edge.to.x,
+              y1: edge.to.y,
+            }}
+            onMouseDownEdge={() => handleEdgeClick(index)}
+            onClickDelete={() => handleDeleteEdge(index)}
+          />
         ))}
-        {ghostEdge && <Edge from={ghostEdge.from} to={ghostEdge.to} />}
+        {ghostEdge && (
+          <Edge
+            isNew={true}
+            position={{
+              x0: ghostEdge.from.x,
+              y0: ghostEdge.from.y,
+              x1: ghostEdge.to.x,
+              y1: ghostEdge.to.y,
+            }}
+          />
+        )}
       </div>
     </div>
   );
