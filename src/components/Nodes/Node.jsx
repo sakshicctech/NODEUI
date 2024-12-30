@@ -4,30 +4,8 @@ import PortButton from "../Ports/PortButton";
 import styles from './Node.module.css';
 
 const Node = ({ id, label, initialX, initialY, onPortClick ,scale}) => {
-  // Ensure that the initial positions are valid numbers
   const [position, setPosition] = useState({ x: initialX, y: initialY });
   const [ports, setPorts] = useState({ left: [], right: [] });
-
-  // Update the port click handler to debug the position values
-  // const handlePortClick = (side, index) => {
-  //   const portX = position.x ;
-  //   const portY = position.y  ; 
-
-  //   const adjustedPortX = portX * scale;
-  //   const adjustedPortY = portY * scale;
-
-  //   console.log('Port Position:', { x: adjustedPortX, y: adjustedPortY });
-
-  //   if (isNaN(adjustedPortY) || isNaN(adjustedPortX)) {
-  //     console.error("Invalid position values:", { x: adjustedPortX, y: adjustedPortY });
-  //   }
-
-  //   onPortClick({
-  //     id: `${id}-${side}-${index}`, 
-  //     position: { x: portX, y: portY }, 
-  //     side: side,
-  //   });
-  // };
 
   const handleMouseDown = (event) => {
     event.stopPropagation();
