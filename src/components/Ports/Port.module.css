@@ -1,21 +1,5 @@
+/* Port.module.css */
 .port {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.port-left {
-    left: -20px;
-}
-
-.port-right {
-    right: -20px;
-}
-
-.port-circle {
     width: 15px;
     height: 15px;
     background-color: #fff;
@@ -25,24 +9,10 @@
     cursor: pointer;
 }
 
-.port-position {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+.port-selected {
+    border-color: red; /* Highlight selected ports */
 }
 
-.port-position-left {
-    left: 10px;
-}
-
-.port-position-right {
-    right: 10px;
-}
-
-.port-btn {
-    background: none;
-    border: 1px solid #ccc;
-    border-radius: 50%;
-    padding: 5px;
-    cursor: pointer;
+.connectable-port {
+    border-color: blue; /* Highlight ports that can be connected */
 }

@@ -1,17 +1,19 @@
 
 import  { useRef } from "react";
+import styles from './Port.module.css';
 const Port = ({ side, ports, onClick }) => {
   const ref = useRef(null); 
 
   const handleClick = (port, event) => {
     const rect = ref.current.getBoundingClientRect();
     const position = {
-      x: rect.left + window.scrollX + rect.width / 2, 
-      y: rect.top + window.scrollY + rect.height / 2  
+      x: rect.left + window.scrollX + rect.width / 2,
+      y: rect.top + window.scrollY + rect.height / 2
     };
-    onClick(port, position); 
-    console.log('Clicked port port:', position);
-    event.stopPropagation(); 
+    onClick(port, position);
+    console.log('Clicked port:', position);
+    event.stopPropagation();
+    event.target.classList.add(styles['port-selected']);  // Add class for visual feedback
   };
 
   return (
@@ -30,17 +32,9 @@ const Port = ({ side, ports, onClick }) => {
       {ports.map((port, index) => (
         <div
           key={index}
-          style={{
-            width: "15px",
-            height: "15px",
-            backgroundColor: "#fff",
-            borderRadius: "50%",
-            margin: "5px 0",
-            border: "2px solid #333",
-            cursor: "pointer"
-          }}
+          className={styles.port}
           title={port}
-          // onMouseDown={(e) => e.stopPropagation()} // Prevent drag actions or other mouse down effects
+          onMouseDown={(e) => e.stopPropagation()} // Prevent drag actions or other mouse down effects
           onClick={(e) => handleClick(port, e)}
         ></div>
       ))}
