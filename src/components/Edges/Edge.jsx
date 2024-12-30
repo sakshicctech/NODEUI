@@ -1,57 +1,39 @@
-import styles from "./Edge.module.css";
+import { useEffect, useRef } from "react";
+import styles from './Edge.module.css';
 
-const Edge = ({ from, to, scale = 1 }) => {
-  if (!from || !to || isNaN(from.x) || isNaN(from.y) || isNaN(to.x) || isNaN(to.y)) {
-    return null; // Prevent rendering if positions are invalid
-  }
+const Edge = ({ from, to }) => {
+  const edgeRef = useRef(null);
 
-  console.log('Edge from:', from);
-  console.log('Edge to:', to);
+  useEffect(() => {
+    if (edgeRef.current) {
+      const startX = from.x;
+      const startY = from.y;
+      const endX = to.x;
+      const endY = to.y;
 
-  // Adjust positions for scaling
-  const adjustedX1 = from.x ;
-  const adjustedY1 = from.y ;
-  const adjustedX2 = to.x ;
-  const adjustedY2 = to.y ;
-
-  // Adjust curvature control point dynamically
-  const controlPointX = (adjustedX1 + adjustedX2) / 2;
-  const controlPointY = Math.min(adjustedY1, adjustedY2) - 50;
+      // Update the SVG path dynamically
+      const path = `M ${startX},${startY} C ${startX + 50},${startY} ${endX - 50},${endY} ${endX},${endY}`;
+      edgeRef.current.setAttribute("d", path);
+    }
+  }, [from, to]);
 
   return (
     <svg
-      className={styles.edge}
       style={{
         position: "absolute",
-        pointerEvents: "none",
-        overflow: "visible",
         left: 0,
         top: 0,
-        width: "100%",
-        height: "100%",
+        pointerEvents: "none",
+        overflow: "visible",
       }}
     >
       <path
-        d={`M ${adjustedX1} ${adjustedY1} 
-            Q ${controlPointX} ${controlPointY}, 
-              ${adjustedX2} ${adjustedY2}`}
-        fill="none"
-        stroke="#5B84C4"
+        ref={edgeRef}
+        className={styles.edgePath}
+        stroke="#007AFF"
         strokeWidth="3"
-        markerEnd="url(#arrowhead)"
+        fill="none"
       />
-      <defs>
-        <marker
-          id="arrowhead"
-          markerWidth="10"
-          markerHeight="7"
-          refX="9"
-          refY="3.5"
-          orient="auto"
-        >
-          <polygon points="0 0, 10 3.5, 0 7" fill="#5B84C4" />
-        </marker>
-      </defs>
     </svg>
   );
 };

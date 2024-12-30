@@ -40,7 +40,7 @@ const Port = ({ side, ports, onClick }) => {
             cursor: "pointer"
           }}
           title={port}
-          onMouseDown={(e) => e.stopPropagation()} // Prevent drag actions or other mouse down effects
+          // onMouseDown={(e) => e.stopPropagation()} // Prevent drag actions or other mouse down effects
           onClick={(e) => handleClick(port, e)}
         ></div>
       ))}
