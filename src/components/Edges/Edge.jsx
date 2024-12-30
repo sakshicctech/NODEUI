@@ -11,8 +11,9 @@ const Edge = ({ from, to }) => {
       const endX = to.x;
       const endY = to.y;
 
-      // Update the SVG path dynamically
-      const path = `M ${startX},${startY} C ${startX + 50},${startY} ${endX - 50},${endY} ${endX},${endY}`;
+      // Create a smooth cubic Bézier curve for the edge
+      const dx = Math.abs(endX - startX) / 2; // Distance for control points
+      const path = `M ${startX},${startY} C ${startX + dx},${startY} ${endX - dx},${endY} ${endX},${endY}`;
       edgeRef.current.setAttribute("d", path);
     }
   }, [from, to]);

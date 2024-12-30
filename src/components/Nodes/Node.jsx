@@ -10,28 +10,11 @@ const Node = ({ id, label, initialX, initialY, onPortClick, onPositionChange }) 
 
   useEffect(() => {
     if (nodeRef.current) {
-      const updatedPorts = calculatePortPositions();
-      onPositionChange(id, position, updatedPorts);
+      onPositionChange(id, position);
     }
   }, [position, ports]);
 
-  const calculatePortPositions = () => {
-    if (!nodeRef.current) return { left: [], right: [] };
-    const rect = nodeRef.current.getBoundingClientRect();
-    const leftPorts = ports.left.map((_, index) => ({
-      x: rect.left + window.scrollX - 10,
-      y: rect.top + window.scrollY + 20 + index * 25,
-      nodeId: id,
-      id: `left-${index}`
-    }));
-    const rightPorts = ports.right.map((_, index) => ({
-      x: rect.right + window.scrollX + 10,
-      y: rect.top + window.scrollY + 20 + index * 25,
-      nodeId: id,
-      id: `right-${index}`
-    }));
-    return { left: leftPorts, right: rightPorts };
-  };
+  
 
   const handleMouseDown = (event) => {
     event.stopPropagation();
@@ -44,9 +27,6 @@ const Node = ({ id, label, initialX, initialY, onPortClick, onPositionChange }) 
       const newX = startPosX + (moveEvent.clientX - startX);
       const newY = startPosY + (moveEvent.clientY - startY);
       setPosition({ x: newX, y: newY });
-
-      const updatedPorts = calculatePortPositions();
-      onPositionChange(id, { x: newX, y: newY }, updatedPorts);
     };
 
     const handleMouseUp = () => {
@@ -60,10 +40,10 @@ const Node = ({ id, label, initialX, initialY, onPortClick, onPositionChange }) 
   };
 
   const addPort = (side) => {
-    const newPortId = `Port ${ports[side].length + 1}`;
+    const newPortId = `${id}-${side}-${ports[side].length + 1}`;
     setPorts((prevPorts) => ({
       ...prevPorts,
-      [side]: [...prevPorts[side], newPortId],
+      [side]: [...prevPorts[side], { id: newPortId }],
     }));
   };
 

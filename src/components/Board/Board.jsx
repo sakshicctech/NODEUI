@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styles from './Board.module.css';
 import Button from '../Button/Button';
-import Node from '../Nodes/Node';   
+import Node from '../Nodes/Node';
 import Edge from '../Edges/Edge';
 
 const Board = () => {
@@ -36,8 +36,10 @@ const Board = () => {
   }, [scale]);
 
   const handleOnMouseDown = (event) => {
-    setGrabbingBoard(true);
-    setClickedPosition({ x: event.clientX, y: event.clientY });
+    if (!event.target.closest('.node')) {
+      setGrabbingBoard(true);
+      setClickedPosition({ x: event.clientX, y: event.clientY });
+    }
   };
 
   const handleOnMouseUp = () => {
@@ -46,7 +48,7 @@ const Board = () => {
   };
 
   const handleOnMouseMove = (event) => {
-    if (clickedPosition.x >= 0 && clickedPosition.y >= 0) {
+    if (grabbingBoard && clickedPosition.x >= 0 && clickedPosition.y >= 0) {
       const dx = event.clientX - clickedPosition.x;
       const dy = event.clientY - clickedPosition.y;
       const boardWrapperElement = document.getElementById('boardWrapper');
@@ -109,25 +111,26 @@ const Board = () => {
     }
   };
 
-  const handlePositionChange = (nodeId, newPosition, ports) => {
+  const handlePositionChange = (nodeId, newPosition) => {
     setNodes((prevNodes) =>
       prevNodes.map((node) =>
         node.id === nodeId ? { ...node, position: newPosition } : node
       )
     );
-  
+
     setEdges((prevEdges) =>
       prevEdges.map((edge) => {
-        if (edge.fromPort?.nodeId === nodeId) {
-          return { ...edge, from: ports.left.find(port => port.id === edge.fromPort.id) };
+        if (edge.from.nodeId === nodeId) {
+          return { ...edge, from: { ...edge.from, ...newPosition } };
         }
-        if (edge.toPort?.nodeId === nodeId) {
-          return { ...edge, to: ports.right.find(port => port.id === edge.toPort.id) };
+        if (edge.to.nodeId === nodeId) {
+          return { ...edge, to: { ...edge.to, ...newPosition } };
         }
         return edge;
       })
     );
   };
+  
   
 
   return (
