@@ -1,0 +1,21 @@
+
+
+/* Node.module.css */
+.nodeComponent {
+    position: absolute;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    cursor: grab;
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+
+.nodeComponent {
+    left: var(--position-x, 0px);
+    top: var(--position-y, 0px);
+}
