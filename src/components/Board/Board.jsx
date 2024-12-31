@@ -61,19 +61,19 @@ const Board = () => {
 
   return (
     <div id="boardWrapper" className={styles.wrapper}> 
-          <Button/>
+          
 
         <div id="board" 
         className={`${styles.board} ${grabbingBoard ? styles.boardDragging : styles.board}` } 
         style={{
           transform: `scale(${scale})`, 
-          marginTop: `${(scale - 1) * 50}vh`, 
-          marginLeft: `${(scale - 1) * 50}vw`,
+          backgroundSize: `${30 / scale}px ${30 / scale}px`,
         }}
         onMouseDown={handleMouseDownBoard} 
         onMouseUp={handleMouseUpBoard}
         onMouseMove={handleMouseMove}
         >
+          <Button hanldeOnClick={() => {}}/>
           
 
         </div>
