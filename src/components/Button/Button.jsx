@@ -1,20 +1,14 @@
 import AddIcon from '@mui/icons-material/Add';
 import styles from './Button.module.css';
+import { memo } from 'react';
 
-
-const Button = ({onClick}) => {
-    
-    
+const Button = memo(() => {
+  console.log('Rendering Button');
   return (
-    <div > 
-            <button
-                onClick={onClick}
-                className={styles.button}
-            >
-                <AddIcon  />
-            </button>
-        </div>
-  )
-}
+    <button className={styles.button}>
+      <AddIcon/>
+    </button>
+  );
+});
 
-export default Button
+export default Button;
