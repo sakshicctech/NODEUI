@@ -48,6 +48,11 @@ const portsSlice = createSlice({
     }
 });
 
+export const getNodePosition = (state, id) => {
+  const node = state.ports.nodes.find(node => node.id === id);
+  return node ? node.position : { x: 0, y: 0 }; // Default position if not found
+};
+
 export const { addNode,updateNodePosition ,toggleNodeSelection,removeNode} = portsSlice.actions;
 
 export default portsSlice.reducer
