@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import styles from './Board.module.css'
 import { decrement, increment } from '../Features/zoomSlice';
 import Button from '../Button/Button';
+import Node from '../Nodes/Node';
+import { updateNodePosition } from '../Features/portsSlice';
 
 const Board = () => {
   const [grabbingBoard, setGrabbingBoard] = useState(false)
@@ -10,6 +12,7 @@ const Board = () => {
 
   const dispatch = useDispatch()
   const scale = useSelector(state => state.zoom)
+  const nodes = useSelector(state => state.ports.nodes)
 
   useEffect(() => {
     const boardElement = document.getElementById('board');
@@ -58,9 +61,13 @@ const Board = () => {
     }
   }
 
+  const handleUpdateNodePosition = (id, position) => {
+    dispatch(updateNodePosition({ id, position }));
+  };
+
 
   return (
-    <div id="boardWrapper" className={styles.wrapper}> 
+    <div id="boardWrapper" className={styles.wrapper} > 
           
 
         <div id="board" 
@@ -74,6 +81,10 @@ const Board = () => {
         onMouseMove={handleMouseMove}
         >
           <Button hanldeOnClick={() => {}}/>
+          {nodes.map((node, index) => (
+            <Node key={index} node={node} onNodeUpdate={handleUpdateNodePosition}/>
+          ))}
+
           
 
         </div>

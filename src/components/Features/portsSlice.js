@@ -12,14 +12,42 @@ const portsSlice = createSlice({
         
         const node={
           id:nanoid(),
-          ports:action.payload.ports
+          label:'Node',
+          ports:action.payload.ports,
+          isSelected:false,
+          position:action.payload.position
         } 
         state.nodes.push(node)
     },
+    updateNodePosition(state, action) {
+      const { id, position } = action.payload;
+      const nodeIndex = state.nodes.findIndex(node => node.id === id);
+      if (nodeIndex !== -1) {
+        state.nodes[nodeIndex].position = position;
+      }
+    },
+    toggleNodeSelection(state, action) {
+      const { id } = action.payload;
+      const nodeIndex = state.nodes.findIndex(node => node.id === id);
+      if (nodeIndex !== -1) {
+        state.nodes[nodeIndex].isSelected = !state.nodes[nodeIndex].isSelected;
+      }
+    },
+    removeNode(state, action) {
+      const { id } = action.payload;
+      console.log(`Removing node with id: ${id}`);
+      const updatedNodes = state.nodes.filter(node => node.id !== id); 
+      return {
+        ...state,
+        nodes: updatedNodes,
+      };
+    }
+    
+  
         
     }
 });
 
-export const { addNode } = portsSlice.actions;
+export const { addNode,updateNodePosition ,toggleNodeSelection,removeNode} = portsSlice.actions;
 
 export default portsSlice.reducer

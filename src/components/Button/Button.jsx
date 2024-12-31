@@ -4,6 +4,7 @@ import { memo, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { addNode } from '../Features/portsSlice';
 
+
 const Button = memo(() => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
@@ -20,7 +21,10 @@ const Button = memo(() => {
     };
 
     const handleSubmit = () => {
-        const newNode = { ports: inputValue };
+        const randomX = Math.random() * 500; 
+        const randomY = Math.random() * 500;
+
+        const newNode = { ports: inputValue , position: { x: randomX, y: randomY }};
         dispatch(addNode(newNode)); 
         setInputValue({ left: 0, right: 0, top: 0, bottom: 0 });
         setIsOpen(false);
