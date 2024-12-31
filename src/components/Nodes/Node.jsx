@@ -66,8 +66,13 @@ const Node = ({ node, onNodeUpdate }) => {
 
 const generatePorts = (count, className) => {
   return Array.from({ length: count }, (_, index) => (
-    <div key={`${className}-${index}`} className={styles.port} />
+    <div
+      key={`${className}-${index}`}
+      className={styles.port}
+      onMouseDown={(e) => e.stopPropagation()}
+    />
   ));
 };
+
 
 export default Node;
