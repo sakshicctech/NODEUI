@@ -1,69 +1,96 @@
-import { useState, useRef, useEffect } from "react";
-import Port from "../Ports/Port";
-import PortButton from "../Ports/PortButton";
-import styles from './Node.module.css';
+/**
+ * Node.jsx
+ * 
+ * Corrected Node component based on your original code.
+ * 
+ * Adjust import paths for `styles` as needed, and ensure
+ * you have matching .node, .nodeSelected, etc. in your CSS.
+ */
 
-const Node = ({ id, label, initialX, initialY, onPortClick, onPositionChange }) => {
-  const [position, setPosition] = useState({ x: initialX, y: initialY });
-  const [ports, setPorts] = useState({ left: [], right: [] });
-  const nodeRef = useRef(null);
+import React, { useMemo } from "react";
+import styles from "./Node.module.css";
 
-  useEffect(() => {
-    if (nodeRef.current) {
-      onPositionChange(id, position);
-    }
-  }, [position, ports]);
+const Node = ({
+  id,
+  x,
+  y,
+  numberInputs,
+  numberOutputs,
+  selected,
+  onMouseDownNode,
+  onMouseDownOutput,
+  onMouseEnterInput,
+  onMouseLeaveInput,
+}) => {
+  // Create refs for each input/output. We use `useMemo` so that
+  // these refs don't get recreated every render.
+  const inputRefs = useMemo(
+    () => Array.from({ length: numberInputs }, () => React.createRef()),
+    [numberInputs]
+  );
+  const outputRefs = useMemo(
+    () => Array.from({ length: numberOutputs }, () => React.createRef()),
+    [numberOutputs]
+  );
 
-  
-
-  const handleMouseDown = (event) => {
+  // Handle mousedown on a specific output
+  const handleMouseDownOutput = (event, outputIndex) => {
     event.stopPropagation();
-    const startX = event.clientX;
-    const startY = event.clientY;
-    const startPosX = position.x;
-    const startPosY = position.y;
-
-    const handleMouseMove = (moveEvent) => {
-      const newX = startPosX + (moveEvent.clientX - startX);
-      const newY = startPosY + (moveEvent.clientY - startY);
-      setPosition({ x: newX, y: newY });
-    };
-
-    const handleMouseUp = () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-    event.preventDefault();
+    const ref = outputRefs[outputIndex];
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    onMouseDownOutput(id, outputIndex, event, centerX, centerY);
   };
 
-  const addPort = (side) => {
-    const newPortId = `${id}-${side}-${ports[side].length + 1}`;
-    setPorts((prevPorts) => ({
-      ...prevPorts,
-      [side]: [...prevPorts[side], { id: newPortId }],
-    }));
+  // Handle mouse enter on a specific input
+  const handleMouseEnterInput = (inputIndex) => {
+    const ref = inputRefs[inputIndex];
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    onMouseEnterInput(id, inputIndex, centerX, centerY);
+  };
+
+  // Handle mouse leave on a specific input
+  const handleMouseLeaveInput = (inputIndex) => {
+    onMouseLeaveInput(id, inputIndex);
   };
 
   return (
     <div
-      className={`node ${styles.nodeComponent}`}
-      onMouseDown={handleMouseDown}
-      style={{
-        transform: `translate(${position.x}px, ${position.y}px)`,
+      className={selected ? styles.nodeSelected : styles.node}
+      style={{ transform: `translate(${x}px, ${y}px)` }}
+      onMouseDown={(event) => {
+        // Stop the board from being selected
+        event.stopPropagation();
+        onMouseDownNode(id, event);
       }}
-      ref={nodeRef}
     >
-      <Port side="left" ports={ports.left} onClick={(port, position) => onPortClick(port, position)} />
-      <div style={{ textAlign: "center", flex: "1", fontWeight: "bold", margin: "0 20px" }}>
-        {label || `Node ${id}`}
+      <div className={styles.inputsWrapper}>
+        {Array.from({ length: numberInputs }).map((_, index) => (
+          <div
+            key={`input-${index}`}
+            ref={inputRefs[index]}
+            className={styles.input}
+            onMouseEnter={() => handleMouseEnterInput(index)}
+            onMouseLeave={() => handleMouseLeaveInput(index)}
+          />
+        ))}
       </div>
-      <Port side="right" ports={ports.right} onClick={(port, position) => onPortClick(port, position)} />
 
-      <PortButton side="left" addPort={addPort} />
-      <PortButton side="right" addPort={addPort} />
+      <div className={styles.outputsWrapper}>
+        {Array.from({ length: numberOutputs }).map((_, index) => (
+          <div
+            key={`output-${index}`}
+            ref={outputRefs[index]}
+            className={styles.output}
+            onMouseDown={(event) => handleMouseDownOutput(event, index)}
+          />
+        ))}
+      </div>
     </div>
   );
 };
