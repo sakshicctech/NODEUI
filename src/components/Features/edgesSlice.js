@@ -1,28 +1,23 @@
-import { createSlice, nanoid } from "@reduxjs/toolkit";
-
-const initialState = {
-  edges: [],
-};
+import { createSlice } from '@reduxjs/toolkit';
 
 const edgesSlice = createSlice({
-  name: "edges",
-  initialState,
+  name: 'edges',
+  initialState: [],
   reducers: {
-    addEdge(state, action) {
-      const edge = {
-        id: nanoid(),
-        ...action.payload,
-        isSelected: false,
-      };
-      state.edges.push(edge);
+    addEdge: (state, action) => {
+      state.push(action.payload); 
     },
-    
-    removeEdge(state, action) {
-      const { id } = action.payload;
-      state.edges = state.edges.filter((edge) => edge.id !== id);
+    removeEdge: (state, action) => {
+      return state.filter(edge => edge.id !== action.payload.id);
+    },
+    updateEdge: (state, action) => {
+      const edgeIndex = state.findIndex(edge => edge.id === action.payload.id);
+      if (edgeIndex !== -1) {
+        state[edgeIndex] = { ...state[edgeIndex], ...action.payload };
+      }
     },
   },
 });
 
-export const { addEdge, removeEdge } = edgesSlice.actions;
+export const { addEdge, removeEdge, updateEdge } = edgesSlice.actions;
 export default edgesSlice.reducer;

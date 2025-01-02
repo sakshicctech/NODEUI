@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import styles from "./Edge.module.css";
 
 const Edge = ({ edge, selected, onDelete }) => {
-  const { id, position, sourceNode, targetNode } = edge;
+  const { id, position } = edge;
   const [middlePoint, setMiddlePoint] = useState({
     x: position.x0 + (position.x1 - position.x0) / 2,
     y: position.y0 + (position.y1 - position.y0) / 2,
@@ -26,8 +26,8 @@ const Edge = ({ edge, selected, onDelete }) => {
     <svg className={styles.wrapper}>
       <path
         className={selected ? styles.edgeSelected : styles.edge}
-        d={`M ${position.x0} ${position.y0} C ${position.x0 + (position.x1 - position.x0) / 2} ${position.y0}, ${
-          position.x1 - (position.x1 - position.x0) / 2
+        d={`M ${position.x0} ${position.y0} C ${position.x0 + (position.x1 - position.x0) } ${position.y0}, ${
+          position.x1 - (position.x1 - position.x0) 
         } ${position.y1}, ${position.x1} ${position.y1}`}
       />
       <g
