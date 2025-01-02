@@ -44,13 +44,13 @@
   height: 100%;
 }
 
-.inputsWrapper, .outputsWrapper, .topsWrapper, .bottomsWrapper {
+.leftsWrapper, .rightsWrapper, .topsWrapper, .bottomsWrapper {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
 }
 
-.inputsWrapper {
+.leftsWrapper {
   flex-direction: column;
   position: absolute;
   left: -24px;
@@ -58,7 +58,7 @@
   bottom: 0;
 }
 
-.outputsWrapper {
+.rightsWrapper {
   flex-direction: column;
   position: absolute;
   right: -24px;

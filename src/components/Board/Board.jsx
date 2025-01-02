@@ -1,95 +1,77 @@
-import  { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import styles from './Board.module.css'
+import styles from './Board.module.css';
 import { decrement, increment } from '../Features/zoomSlice';
 import Button from '../Button/Button';
 import Node from '../Nodes/Node';
 import { updateNodePosition } from '../Features/portsSlice';
 
 const Board = () => {
-  const [grabbingBoard, setGrabbingBoard] = useState(false)
-  const [clickedPosition, setClickedPosition] = useState({x: -1, y: -1})
+  const [grabbingBoard, setGrabbingBoard] = useState(false);
+  const [clickedPosition, setClickedPosition] = useState({ x: -1, y: -1 });
 
-  const dispatch = useDispatch()
-  const scale = useSelector(state => state.zoom)
-  const nodes = useSelector(state => state.ports.nodes)
+  const dispatch = useDispatch();
+  const scale = useSelector(state => state.zoom);
+  const nodes = useSelector(state => state.ports.nodes);
+
+  const handleWheel = useCallback((event) => {
+    event.preventDefault();
+    if (event.deltaY < 0) {
+      dispatch(increment());
+    } else {
+      dispatch(decrement());
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     const boardElement = document.getElementById('board');
-
-    const handleWheel = (event) => {
-      event.preventDefault();
-
-      if (event.deltaY < 0) {
-        dispatch(increment()); 
-      } else {
-        dispatch(decrement()); 
-      }
-    };
-
-    if (boardElement) {
-      boardElement.addEventListener('wheel', handleWheel,{ passive: false });
-    }
+    boardElement?.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
-      if (boardElement) {
-        boardElement.removeEventListener('wheel', handleWheel);
-      }
+      boardElement?.removeEventListener('wheel', handleWheel);
     };
+  }, [handleWheel]);
+
+  const handleMouseDownBoard = useCallback((event) => {
+    setClickedPosition({ x: event.clientX, y: event.clientY });
+    setGrabbingBoard(true);
+  }, []);
+
+  const handleMouseUpBoard = useCallback(() => {
+    setClickedPosition({ x: -1, y: -1 });
+    setGrabbingBoard(false);
+  }, []);
+
+  const handleMouseMove = useCallback((event) => {
+    if (clickedPosition.x >= 0 && clickedPosition.y >= 0) {
+      const boardElement = document.getElementById('boardWrapper');
+      boardElement?.scrollBy(-event.movementX, -event.movementY);
+      setClickedPosition({ x: event.clientX, y: event.clientY });
+    }
+  }, [clickedPosition]);
+
+  const handleUpdateNodePosition = useCallback((id, position) => {
+    dispatch(updateNodePosition({ id, position }));
   }, [dispatch]);
 
-  const handleMouseDownBoard = (event) => {
-    setClickedPosition({x: event.clientX, y: event.clientY})
-
-    setGrabbingBoard(true)
-
-    
-  }
-
-  const handleMouseUpBoard = () => {
-    setClickedPosition({x: -1, y: -1})
-    setGrabbingBoard(false)
-  }
-
-  const handleMouseMove = (event) => {
-    if(clickedPosition.x >= 0 && clickedPosition.y >= 0) {
-      const boardElement = document.getElementById('boardWrapper');
-      if(boardElement) {
-        boardElement.scrollBy(-event.movementX, -event.movementY)
-        setClickedPosition({x: event.clientX, y: event.clientY})
-      }
-    }
-  }
-
-  const handleUpdateNodePosition = (id, position) => {
-    dispatch(updateNodePosition({ id, position }));
-  };
-
-
   return (
-    <div id="boardWrapper" className={styles.wrapper} > 
-          
-
-        <div id="board" 
-        className={`${styles.board} ${grabbingBoard ? styles.boardDragging : styles.board}` } 
-        style={{
-          transform: `scale(${scale})`, 
-          backgroundSize: `${30 / scale}px ${30 / scale}px`,
-        }}
-        onMouseDown={handleMouseDownBoard} 
-        onMouseUp={handleMouseUpBoard}
-        onMouseMove={handleMouseMove}
-        >
-          <Button hanldeOnClick={() => {}}/>
-          {nodes.map((node, index) => (
-            <Node key={index} node={node} onNodeUpdate={handleUpdateNodePosition}/>
-          ))}
-
-          
-
-        </div>
+    <div id="boardWrapper" className={styles.wrapper}>
+      <div id="board"
+           className={`${styles.board} ${grabbingBoard ? styles.boardDragging : ''}`}
+           style={{
+             transform: `scale(${scale})`,
+             backgroundSize: `${30 / scale}px ${30 / scale}px`,
+           }}
+           onMouseDown={handleMouseDownBoard}
+           onMouseUp={handleMouseUpBoard}
+           onMouseMove={handleMouseMove}>
+        <Button handleOnClick={() => {}} />
+        {nodes.map((node, index) => (
+          <Node key={index} node={node} onNodeUpdate={handleUpdateNodePosition} />
+        ))}
+      </div>
     </div>
-  )
+  );
 }
 
-export default Board
+export default Board;

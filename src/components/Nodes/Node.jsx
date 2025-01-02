@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import styles from './Node.module.css';
 import { useDispatch } from 'react-redux';
 import { toggleNodeSelection, removeNode } from '../Features/portsSlice';
@@ -6,13 +6,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 const Node = ({ node, onNodeUpdate }) => {
   const dispatch = useDispatch();
-  const { id, ports, isSelected, label } = node;
-  const [position, setPosition] = useState(node.position);
+  const { id, ports, isSelected, label, position: initialPosition } = node;
 
-  const handleMouseDown = (e) => {
-    e.stopPropagation(); 
+  const [position, setPosition] = useState(initialPosition);
+  const [nodeIds, setNodeIDs] = useState([]);
+
+  const handleMouseDown = useCallback((e) => {
+    e.stopPropagation();
     if (!isSelected) {
-      dispatch(toggleNodeSelection({ id })); 
+      dispatch(toggleNodeSelection({ id }));
     }
 
     const startPos = { x: e.clientX, y: e.clientY };
@@ -27,14 +29,69 @@ const Node = ({ node, onNodeUpdate }) => {
     };
 
     const onMouseUp = () => {
-      onNodeUpdate(id, position); // Update the node position
+      onNodeUpdate(id, position); 
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
-  };
+  }, [id, isSelected, position, onNodeUpdate, dispatch]);
+
+  const handleOnPortClick = useCallback((e, side, index) => {
+    e.stopPropagation();
+    const portPosition = calculateSinglePortPosition(side, index);
+    updateNodeIDs(id);
+  }, [position, ports]);
+
+  const updateNodeIDs = useCallback((newId) => {
+    setNodeIDs(prevNodeIDs => {
+      if (!prevNodeIDs.includes(newId)) {
+        return [...prevNodeIDs, newId];
+      }
+      return prevNodeIDs;
+    });
+  }, []);
+
+  const generatePorts = useCallback((count, side) => {
+    return Array.from({ length: count }, (_, index) => (
+      <div
+        key={`${side}-${index}`}
+        className={styles.port}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => handleOnPortClick(e, side, index)}
+      />
+    ));
+  }, [handleOnPortClick]);
+
+  const calculateSinglePortPosition = useCallback((side, index) => {
+    const nodeWidth = 120;
+    const nodeHeight = 120;
+    const portOffset = 24;
+    const portSize = 12;
+    const count = ports[side];
+    
+    let x, y;
+    switch(side) {
+      case 'left':
+        x = position.x - portOffset;
+        y = position.y + (nodeHeight / (count + 1)) * (index + 1) - portSize / 2;
+        break;
+      case 'right':
+        x = position.x + nodeWidth + portOffset - portSize;
+        y = position.y + (nodeHeight / (count + 1)) * (index + 1) - portSize / 2;
+        break;
+      case 'top':
+        x = position.x + (nodeWidth / (count + 1)) * (index + 1) - portSize / 2;
+        y = position.y - portOffset;
+        break;
+      case 'bottom':
+        x = position.x + (nodeWidth / (count + 1)) * (index + 1) - portSize / 2;
+        y = position.y + nodeHeight + portOffset - portSize;
+        break;
+    }
+    return { x, y };
+  }, [ports, position]);
 
   return (
     <div
@@ -43,36 +100,24 @@ const Node = ({ node, onNodeUpdate }) => {
       onMouseDown={handleMouseDown}
     >
       <div className={styles.nodeContent}>{label}</div>
-
       {isSelected && (
         <button
           className={styles.deleteButton}
           onClick={(e) => {
-            e.stopPropagation(); 
-            dispatch(removeNode({ id })); 
+            e.stopPropagation();
+            dispatch(removeNode({ id }));
           }}
         >
           <DeleteIcon />
         </button>
       )}
-
-      <div className={styles.inputsWrapper}>{generatePorts(ports.left, 'left')}</div>
-      <div className={styles.outputsWrapper}>{generatePorts(ports.right, 'right')}</div>
-      <div className={styles.topsWrapper}>{generatePorts(ports.top, 'top')}</div>
-      <div className={styles.bottomsWrapper}>{generatePorts(ports.bottom, 'bottom')}</div>
+      {['left', 'right', 'top', 'bottom'].map((side) =>
+        <div key={side} className={styles[`${side}sWrapper`]}>
+          {generatePorts(ports[side], side)}
+        </div>
+      )}
     </div>
   );
 };
-
-const generatePorts = (count, className) => {
-  return Array.from({ length: count }, (_, index) => (
-    <div
-      key={`${className}-${index}`}
-      className={styles.port}
-      onMouseDown={(e) => e.stopPropagation()}
-    />
-  ));
-};
-
 
 export default Node;
