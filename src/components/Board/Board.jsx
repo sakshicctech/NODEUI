@@ -67,7 +67,7 @@ const Board = () => {
       return;
     }
   
-    const portPosition = calculatePortPosition(nodePosition, side, portIndex, node.ports[side], scale);
+    const portPosition = calculatePortPosition(nodePosition, side, portIndex, node.ports[side]);
   
     if (currentlySelectedNode) {
       const startPortPosition = currentlySelectedNode.portPosition;
@@ -100,6 +100,8 @@ const Board = () => {
     const scaledNodeWidth = nodeWidth * scale;
     const scaledNodeHeight = nodeHeight * scale;
     const scaledPortOffset = portOffset * scale;
+
+    console.log(side)
   
     switch (side) {
       case "left":
