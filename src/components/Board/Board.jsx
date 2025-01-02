@@ -7,6 +7,7 @@ import Node from '../Nodes/Node';
 import Edge from '../Edges/Edge';
 import { updateNodePosition } from '../Features/portsSlice';
 import {addEdge,removeEdge} from '../Features/edgesSlice';
+import { updateEdgePosition } from '../Features/edgesSlice';
 
 const Board = () => {
   const [grabbingBoard, setGrabbingBoard] = useState(false);
@@ -55,9 +56,8 @@ const Board = () => {
     }
   }, [clickedPosition]);
 
-  const handleUpdateNodePosition = useCallback((id, position) => {
-    dispatch(updateNodePosition({ id, position }));
-  }, [dispatch]);
+  
+  
 
 
   const handlePortClick = (nodeId, side, portIndex, nodePosition) => {
@@ -81,10 +81,14 @@ const Board = () => {
         },
         sourceNode: currentlySelectedNode.id,
         targetNode: nodeId,
+        sourceSide: currentlySelectedNode.side,
+        targetSide: side,
+        sourcePort: currentlySelectedNode.portIndex,
+        targetPort: portIndex
       }));
       setCurrentlySelectedNode(null);
     } else {
-      setCurrentlySelectedNode({ id: nodeId, portPosition });
+      setCurrentlySelectedNode({ id: nodeId, portPosition, side,portIndex });
     }
   };
   
@@ -92,7 +96,7 @@ const Board = () => {
 
 
   const calculatePortPosition = (nodePosition, side, portIndex, totalPorts) => {
-    const nodeWidth = 120; // Adjusted to actual size if different
+    const nodeWidth = 120; 
     const nodeHeight = 120;
     const portOffset = 24;
   
@@ -105,11 +109,11 @@ const Board = () => {
   
     switch (side) {
       case "left":
-        x = nodePosition.x - scaledPortOffset + 2;
+        x = nodePosition.x - scaledPortOffset ;
         y = nodePosition.y + scaledNodeHeight / (totalPorts + 1) * (portIndex + 1);
         break;
       case "right":
-        x = nodePosition.x + scaledNodeWidth + scaledPortOffset+2; ;
+        x = nodePosition.x + scaledNodeWidth + scaledPortOffset ;
         y = nodePosition.y + scaledNodeHeight / (totalPorts + 1) * (portIndex + 1);
         break;
       case "top":
@@ -124,10 +128,50 @@ const Board = () => {
     
     return { x, y };
   };
+
+  const handleUpdateNodePosition = useCallback(
+    (id, updatedPosition) => {
+      dispatch(updateNodePosition({ id, position: updatedPosition }));
   
+      const connectedEdges = edges.filter(
+        edge => edge.sourceNode === id || edge.targetNode === id
+      );
   
+      connectedEdges.forEach(edge => {
+        const edgeToUpdate = {
+          id: edge.id,
+          position: { ...edge.position } 
+        };
   
+        if (edge.sourceNode === id) {
+          const sourcePosition = calculatePortPosition(
+            updatedPosition,
+            edge.sourceSide,
+            edge.sourcePort,
+            nodes.find(n => n.id === edge.sourceNode).ports[edge.sourceSide]
+          );
+          edgeToUpdate.position.x0 = sourcePosition.x;
+          edgeToUpdate.position.y0 = sourcePosition.y;
+        }
   
+        if (edge.targetNode === id) {
+          const targetNode = nodes.find(n => n.id === edge.targetNode);
+          const targetPosition = calculatePortPosition(
+            targetNode.position,
+            edge.targetSide,
+            edge.targetPort,
+            targetNode.ports[edge.targetSide]
+          );
+          edgeToUpdate.position.x1 = targetPosition.x;
+          edgeToUpdate.position.y1 = targetPosition.y;
+        }
+  
+        console.log(`Updating edge ${edge.id} position:`, edgeToUpdate.position);
+        dispatch(updateEdgePosition(edgeToUpdate));
+      });
+    },
+    [dispatch, edges, nodes]
+  );
 
   return (
     <div id="boardWrapper" className={styles.wrapper}>
