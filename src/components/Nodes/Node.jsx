@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import styles from "./Node.module.css";
 import { useDispatch } from "react-redux";
 import { toggleNodeSelection, removeNode } from "../Features/portsSlice";
@@ -12,6 +12,9 @@ const Node = ({ node, onNodeUpdate, onPortClick }) => {
 
   const handleMouseDown = useCallback(
     (e) => {
+      if (e.target.classList.contains(styles.port)) {
+        return;
+      }
       e.stopPropagation();
       if (!isSelected) {
         dispatch(toggleNodeSelection({ id }));
@@ -48,6 +51,7 @@ const Node = ({ node, onNodeUpdate, onPortClick }) => {
   );
 
   const generatePorts = useCallback(
+
     (count, side) => {
       return Array.from({ length: count }, (_, index) => (
         <div
@@ -62,6 +66,22 @@ const Node = ({ node, onNodeUpdate, onPortClick }) => {
     },
     [handlePortClick]
   );
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(`.${styles.node}`)) {
+        if (isSelected) {
+          dispatch(toggleNodeSelection({ id }));
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSelected, dispatch, id]);
 
   return (
     <div
