@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from "./Edge.module.css";
 
-const Edge = ({ selected, isNew, position, onMouseDownEdge, onClickDelete }) => {
+const Edge = ({ edge, selected, onDelete }) => {
+  const { id, position } = edge;
   const [middlePoint, setMiddlePoint] = useState({
     x: position.x0 + (position.x1 - position.x0) / 2,
     y: position.y0 + (position.y1 - position.y0) / 2,
@@ -13,33 +14,26 @@ const Edge = ({ selected, isNew, position, onMouseDownEdge, onClickDelete }) => 
     setMiddlePoint({ x: middleX, y: middleY });
   }, [position]);
 
-  const calculateOffset = (value) => value / 2;
-
-  const handleOnMouseDownEdge = (event) => {
-    event.stopPropagation();
-    onMouseDownEdge();
-  };
-
-  const handleOnClickDelete = (event) => {
-    event.stopPropagation();
-    onClickDelete();
-  };
+  const handleDelete = useCallback(
+    (event) => {
+      event.stopPropagation();
+      onDelete(id);
+    },
+    [id, onDelete]
+  );
 
   return (
     <svg className={styles.wrapper}>
       <path
-  className={isNew ? styles.edgeNew : selected ? styles.edgeSelected : styles.edge}
-  d={`M ${position.x0} ${position.y0} C ${
-    position.x0 + (position.x1 - position.x0) / 2
-  } ${position.y0}, ${position.x1 - (position.x1 - position.x0) / 2} ${
-    position.y1
-  }, ${position.x1} ${position.y1}`}
-/>
-
+        className={selected ? styles.edgeSelected : styles.edge}
+        d={`M ${position.x0} ${position.y0} C ${position.x0 + (position.x1 - position.x0) } ${position.y0}, ${
+          position.x1 - (position.x1 - position.x0) 
+        } ${position.y1}, ${position.x1} ${position.y1}`}
+      />
       <g
         className={selected ? styles.delete : styles.deleteHidden}
         transform={`translate(${middlePoint.x}, ${middlePoint.y - (selected ? 24 : 0)})`}
-        onMouseDown={handleOnClickDelete}
+        onMouseDown={handleDelete}
       >
         <circle className={styles.circle} />
         <svg

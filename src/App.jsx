@@ -1,4 +1,3 @@
-import {BasicNode} from "./components";
 import Board from "./components/Board/Board";
 
 
