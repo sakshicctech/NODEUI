@@ -1,118 +1,21 @@
-.node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  cursor: grab;
-  background-color: white;
-  border: 2px solid #c4c4c4;
-  border-radius: 6px;
-  box-shadow: 1px 1px 11px -6px rgba(0, 0, 0, 0.75);
-  user-select: none;
-  z-index: 1;
-  transition: border 0.2s ease, box-shadow 0.2s ease;
-  width: 120px;
-  height: 120px;
+
+
+/* Node.module.css */
+.nodeComponent {
+    position: absolute;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    cursor: grab;
+    user-select: none;
+    display: flex;
+    align-items: center;
 }
 
-.node:hover {
-  box-shadow: 2px 2px 12px -6px rgba(0, 0, 0, 0.75);
-}
 
-.nodeSelected {
-  border: 2px solid #e38c29;
-  z-index: 100; /* Ensure selected node is more prominent */
+.nodeComponent {
+    left: var(--position-x, 0px);
+    top: var(--position-y, 0px);
 }
-
-.nodeSelected:hover {
-  box-shadow: 2px 2px 12px -6px rgba(0, 0, 0, 0.75);
-}
-
-.nodeContent {
-  text-align: center;
-  z-index: 2; 
-  color: #333; 
-  font-size: 14px;  
-  pointer-events: none;  
-}
-
-.portsWrapper {
-  display: flex;
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.leftsWrapper, .rightsWrapper, .topsWrapper, .bottomsWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-evenly;
-}
-
-.leftsWrapper {
-  flex-direction: column;
-  position: absolute;
-  left: -24px;
-  top: 0;
-  bottom: 0;
-}
-
-.rightsWrapper {
-  flex-direction: column;
-  position: absolute;
-  right: -24px;
-  top: 0;
-  bottom: 0;
-}
-
-.topsWrapper {
-  flex-direction: row;
-  position: absolute;
-  top: -24px;
-  left: 0;
-  right: 0;
-}
-
-.bottomsWrapper {
-  flex-direction: row;
-  position: absolute;
-  bottom: -24px;
-  left: 0;
-  right: 0;
-}
-
-.port {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #e38c29;
-  cursor: crosshair; 
-}
-
-.port:hover {
-  background-color: #ff7043; 
-}
-
-.deleteButton {
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  background-color: transparent;
-  color: #e53935;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.deleteButton:hover {
-  background-color: rgba(229, 57, 53, 0.1);
-}
-
