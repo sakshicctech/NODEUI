@@ -5,9 +5,10 @@ import { decrement, increment } from '../Features/zoomSlice';
 import Button from '../Button/Button';
 import Node from '../Nodes/Node';
 import Edge from '../Edges/Edge';
-import { updateNodePosition } from '../Features/portsSlice';
+import { updateNodePosition , addNode} from '../Features/portsSlice';
 import {addEdge,removeEdge} from '../Features/edgesSlice';
 import { updateEdgePosition } from '../Features/edgesSlice';
+import resNodes from '../resources/resNodes';
 
 const Board = () => {
   const [grabbingBoard, setGrabbingBoard] = useState(false);
@@ -18,6 +19,16 @@ const Board = () => {
   const scale = useSelector(state => state.zoom);
   const nodes = useSelector(state => state.ports.nodes);
   const edges = useSelector((state) => state.edges);
+
+
+  useEffect(() => {
+    resNodes.forEach(node => {
+        dispatch(addNode({
+            position: node.position,
+            ports: node.ports
+        }));
+    });
+}, [dispatch]);
 
 
   const handleWheel = useCallback((event) => {
