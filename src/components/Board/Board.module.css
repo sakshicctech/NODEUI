@@ -7,14 +7,20 @@
     overflow: scroll;
 }
 
-.board, .boardDragging {
+.board {
     position: relative;
-    width: 200vw; /* Increased size to accommodate zoom out */
-    height: 200vh;
+    width: 100vw;
+    height: 100vh;
+    background-size: 30px 30px;
     background-image: radial-gradient(circle, #b8b8b8bf 1px, rgba(0, 0, 0, 0) 1px);
     cursor: grab;
 }
 
 .boardDragging {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-size: 30px 30px;
+    background-image: radial-gradient(circle, #b8b8b8bf 1px, rgba(0, 0, 0, 0) 1px);
     cursor: grabbing;
 }
