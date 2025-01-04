@@ -14,6 +14,10 @@ const Edge = ({ edge, selected, onDelete }) => {
     setMiddlePoint({ x: middleX, y: middleY });
   }, [position]);
 
+  function calculateOffset(value) {
+    return value / 2;
+}
+
   const handleDelete = useCallback(
     (event) => {
       event.stopPropagation();
@@ -26,8 +30,8 @@ const Edge = ({ edge, selected, onDelete }) => {
     <svg className={styles.wrapper}>
       <path
         className={selected ? styles.edgeSelected : styles.edge}
-        d={`M ${position.x0} ${position.y0} C ${position.x0 + (position.x1 - position.x0) } ${position.y0}, ${
-          position.x1 - (position.x1 - position.x0) 
+        d={`M ${position.x0} ${position.y0} C ${position.x0 + calculateOffset(Math.abs(position.x1 - position.x0)) } ${position.y0}, ${
+          position.x1 - calculateOffset(Math.abs(position.x1 - position.x0)) 
         } ${position.y1}, ${position.x1} ${position.y1}`}
       />
       <g
