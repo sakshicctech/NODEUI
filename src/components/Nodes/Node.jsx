@@ -4,11 +4,16 @@ import { useDispatch } from "react-redux";
 import { toggleNodeSelection, removeNode } from "../Features/portsSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const Node = ({ node, onNodeUpdate, onPortClick }) => {
+const Node = ({ node, onNodeUpdate, onPortClick, isDragging }) => {
   const dispatch = useDispatch();
   const { id, ports, isSelected, label, position: initialPosition } = node;
-
   const [position, setPosition] = useState(initialPosition);
+
+  useEffect(() => {
+    if (!isDragging) {
+      setPosition(initialPosition);
+    }
+  }, [initialPosition, isDragging]);
 
   const handleMouseDown = useCallback(
     (e) => {
@@ -21,18 +26,23 @@ const Node = ({ node, onNodeUpdate, onPortClick }) => {
       }
 
       const startPos = { x: e.clientX, y: e.clientY };
+      const initialNodePos = { ...position };
 
       const onMouseMove = (moveEvent) => {
+        const dx = moveEvent.clientX - startPos.x;
+        const dy = moveEvent.clientY - startPos.y;
+        
         const newPos = {
-          x: position.x + (moveEvent.clientX - startPos.x),
-          y: position.y + (moveEvent.clientY - startPos.y),
+          x: initialNodePos.x + dx,
+          y: initialNodePos.y + dy
         };
+        
         setPosition(newPos);
+        onNodeUpdate(id, newPos);
         moveEvent.preventDefault();
       };
 
       const onMouseUp = () => {
-        onNodeUpdate(id, position);
         document.removeEventListener("mousemove", onMouseMove);
         document.removeEventListener("mouseup", onMouseUp);
       };
@@ -45,13 +55,12 @@ const Node = ({ node, onNodeUpdate, onPortClick }) => {
 
   const handlePortClick = useCallback(
     (side, index) => {
-      onPortClick(id, side, index, position); 
+      onPortClick(id, side, index, position);
     },
     [id, position, onPortClick]
   );
 
   const generatePorts = useCallback(
-
     (count, side) => {
       return Array.from({ length: count }, (_, index) => (
         <div
