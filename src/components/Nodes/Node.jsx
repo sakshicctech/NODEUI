@@ -1,9 +1,10 @@
 import { useState, useCallback, useEffect } from "react";
 import styles from "./Node.module.css";
 import { useDispatch } from "react-redux";
-import { toggleNodeSelection, removeNode } from "../Features/portsSlice";
+import { toggleNodeSelection, removeNode, addNode } from "../Features/portsSlice";
 import { removeEdge } from "../Features/edgesSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
 const Node = ({ node, onNodeUpdate, onPortClick, isDragging, edges }) => {
   const dispatch = useDispatch();
@@ -31,6 +32,23 @@ const Node = ({ node, onNodeUpdate, onPortClick, isDragging, edges }) => {
     // Then delete the node
     dispatch(removeNode({ id }));
   }, [dispatch, id, edges]);
+
+  const handleNodeAdd = useCallback((e) => {
+    e.stopPropagation();
+    // Create a new node with an offset from the current node's position
+    const newNode = {
+      id: `node-${Date.now()}`, // Generate unique ID
+      label: label, // Same label as current node
+      position: {
+        x: position.x + 100, // Offset by 100px to the right
+        y: position.y + 50   // Offset by 50px down
+      },
+      ports: { ...ports },   // Copy the same port configuration
+      isSelected: false
+    };
+    
+    dispatch(addNode(newNode));
+  }, [dispatch, label, position, ports]);
 
   const handleMouseDown = useCallback(
     (e) => {
@@ -117,12 +135,20 @@ const Node = ({ node, onNodeUpdate, onPortClick, isDragging, edges }) => {
     >
       <div className={styles.nodeContent}>{label}</div>
       {isSelected && (
-        <button
-          className={styles.deleteButton}
-          onClick={handleNodeDelete}
-        >
-          <DeleteIcon />
-        </button>
+        <div>
+          <button
+            className={styles.deleteButton}
+            onClick={handleNodeDelete}
+          >
+            <DeleteIcon />
+          </button>
+          <button 
+            className={styles.addButton}
+            onClick={handleNodeAdd}
+          >
+            <AddIcon />
+          </button>
+        </div>
       )}
       <div className={styles.leftsWrapper}>{generatePorts(ports.left, "left")}</div>
       <div className={styles.rightsWrapper}>{generatePorts(ports.right, "right")}</div>

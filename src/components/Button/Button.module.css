@@ -88,3 +88,9 @@
 .buttonRect:active {
   transform: scale(0.95);
 }
+
+.orientationButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Adds 16px space between buttons */
+}
