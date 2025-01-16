@@ -13,6 +13,7 @@ const Board = () => {
   const [grabbingBoard, setGrabbingBoard] = useState(false);
   const [clickedPosition, setClickedPosition] = useState({ x: -1, y: -1 });
   const [currentlySelectedNode, setCurrentlySelectedNode] = useState(null);
+  const [selectedEdgeId, setSelectedEdgeId] = useState(null);
   const [draggingNodeId, setDraggingNodeId] = useState(null);
 
   const dispatch = useDispatch();
@@ -135,6 +136,7 @@ const Board = () => {
     if (!event.target.classList.contains(styles.port)) {
       setClickedPosition({ x: event.clientX, y: event.clientY });
       setGrabbingBoard(true);
+      setSelectedEdgeId(null);
     }
   }, []);
 
@@ -199,6 +201,10 @@ const Board = () => {
     }
   }, [currentlySelectedNode, dispatch, edges, nodes, calculatePortPosition]);
 
+  const handleEdgeClick = useCallback((edgeId) => {
+    setSelectedEdgeId(edgeId);
+  }, []);
+
   return (
     <div id="boardWrapper" className={styles.wrapper}>
       <div id="board"
@@ -224,8 +230,9 @@ const Board = () => {
           <Edge
             key={edge.id}
             edge={edge}
-            selected={false}
+            selected={selectedEdgeId === edge.id}
             onDelete={(id) => dispatch(removeEdge({ id }))}
+            onClick={() => handleEdgeClick(edge.id)}
           />
         ))}
       </div>

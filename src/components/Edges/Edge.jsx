@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styles from "./Edge.module.css";
 
-const Edge = ({ edge, selected, onDelete }) => {
+const Edge = ({ edge, selected, onDelete, onClick }) => {
   const { id, position } = edge;
   const [middlePoint, setMiddlePoint] = useState({
     x: position.x0 + (position.x1 - position.x0) / 2,
@@ -16,7 +16,7 @@ const Edge = ({ edge, selected, onDelete }) => {
 
   function calculateOffset(value) {
     return value / 2;
-}
+  }
 
   const handleDelete = useCallback(
     (event) => {
@@ -26,20 +26,29 @@ const Edge = ({ edge, selected, onDelete }) => {
     [id, onDelete]
   );
 
+  const handleClick = useCallback(
+    (event) => {
+      event.stopPropagation();
+      onClick();
+    },
+    [onClick]
+  );
+
   return (
     <svg className={styles.wrapper}>
       <path
         className={selected ? styles.edgeSelected : styles.edge}
-        d={`M ${position.x0} ${position.y0} C ${position.x0 + calculateOffset(Math.abs(position.x1 - position.x0)) } ${position.y0}, ${
-          position.x1 - calculateOffset(Math.abs(position.x1 - position.x0)) 
+        d={`M ${position.x0} ${position.y0} C ${position.x0 + calculateOffset(Math.abs(position.x1 - position.x0))} ${position.y0}, ${
+          position.x1 - calculateOffset(Math.abs(position.x1 - position.x0))
         } ${position.y1}, ${position.x1} ${position.y1}`}
+        onClick={handleClick}
       />
       <g
         className={selected ? styles.delete : styles.deleteHidden}
         transform={`translate(${middlePoint.x}, ${middlePoint.y - (selected ? 24 : 0)})`}
         onMouseDown={handleDelete}
       >
-        <circle className={styles.circle} />
+        <circle className={styles.circle} cx="0" cy="0" r="14" />
         <svg
           fill="currentColor"
           strokeWidth="0"
