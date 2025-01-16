@@ -221,6 +221,7 @@ const Board = () => {
           <Node 
             key={node.id}
             node={node}
+            edges={edges}
             onNodeUpdate={handleUpdateNodePosition}
             onPortClick={handlePortClick}
             isDragging={draggingNodeId === node.id}

@@ -2,9 +2,10 @@ import { useState, useCallback, useEffect } from "react";
 import styles from "./Node.module.css";
 import { useDispatch } from "react-redux";
 import { toggleNodeSelection, removeNode } from "../Features/portsSlice";
+import { removeEdge } from "../Features/edgesSlice";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-const Node = ({ node, onNodeUpdate, onPortClick, isDragging }) => {
+const Node = ({ node, onNodeUpdate, onPortClick, isDragging, edges }) => {
   const dispatch = useDispatch();
   const { id, ports, isSelected, label, position: initialPosition } = node;
   const [position, setPosition] = useState(initialPosition);
@@ -14,6 +15,22 @@ const Node = ({ node, onNodeUpdate, onPortClick, isDragging }) => {
       setPosition(initialPosition);
     }
   }, [initialPosition, isDragging]);
+
+  const handleNodeDelete = useCallback((e) => {
+    e.stopPropagation();
+    // Get all edges connected to this node
+    const connectedEdges = edges.filter(
+      edge => edge.sourceNode === id || edge.targetNode === id
+    );
+    
+    // Delete all connected edges first
+    connectedEdges.forEach(edge => {
+      dispatch(removeEdge({ id: edge.id }));
+    });
+    
+    // Then delete the node
+    dispatch(removeNode({ id }));
+  }, [dispatch, id, edges]);
 
   const handleMouseDown = useCallback(
     (e) => {
@@ -102,10 +119,7 @@ const Node = ({ node, onNodeUpdate, onPortClick, isDragging }) => {
       {isSelected && (
         <button
           className={styles.deleteButton}
-          onClick={(e) => {
-            e.stopPropagation();
-            dispatch(removeNode({ id }));
-          }}
+          onClick={handleNodeDelete}
         >
           <DeleteIcon />
         </button>
