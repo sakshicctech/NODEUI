@@ -21,7 +21,8 @@ const Button = memo(() => {
     }, []);
 
     const handleInputChange = useCallback((direction) => (e) => {
-        setInputValue(prevValues => ({ ...prevValues, [direction]: Number(e.target.value) }));
+        const value = Math.max(0, Math.min(2, Number(e.target.value)));
+        setInputValue(prevValues => ({ ...prevValues, [direction]: value }));
     }, []);
 
     const handleSubmit = useCallback(() => {
@@ -74,6 +75,7 @@ const Button = memo(() => {
                                         value={inputValue[direction]}
                                         onChange={handleInputChange(direction)}
                                         aria-label={`Number of inputs on ${direction}`}
+                                        
                                     />
                                 </React.Fragment>
                             ))}

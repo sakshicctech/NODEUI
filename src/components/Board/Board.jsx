@@ -159,6 +159,7 @@ const Board = () => {
     if (!node) return;
 
     const portPosition = calculatePortPosition(nodePosition, side, portIndex, node.ports[side]);
+    console.log("portPosition", portPosition);
 
     if (currentlySelectedNode) {
       // Prevent self-connection
@@ -166,16 +167,16 @@ const Board = () => {
         setCurrentlySelectedNode(null);
         return;
       }
-
       // Prevent duplicate connections
       const isDuplicate = edges.some(edge => 
-        (edge.sourceNode === currentlySelectedNode.id && edge.targetNode === nodeId) ||
-        (edge.sourceNode === nodeId && edge.targetNode === currentlySelectedNode.id)
+        console.log("edge", edge)
+
       );
+
+      console.log("isDuplicate", isDuplicate);
 
       if (!isDuplicate) {
         dispatch(addEdge({
-          id: `edge-${Date.now()}`,
           position: {
             x0: currentlySelectedNode.portPosition.x,
             y0: currentlySelectedNode.portPosition.y,

@@ -1,11 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { nanoid } from 'nanoid';
 
 const edgesSlice = createSlice({
   name: 'edges',
   initialState: [],
   reducers: {
     addEdge: (state, action) => {
-      state.push(action.payload); 
+      const edge = {
+        id: nanoid(),
+        ...action.payload
+      }
+      state.push(edge); 
     },
     removeEdge: (state, action) => {
       return state.filter(edge => edge.id !== action.payload.id);

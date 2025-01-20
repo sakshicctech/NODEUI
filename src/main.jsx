@@ -4,7 +4,8 @@ import { Provider } from 'react-redux';
 import store from './components/App/store';
 import './index.css'
 import App from './App.jsx'
-
+import {PersistGate} from 'redux-persist/integration/react';
+import {persistStore} from 'redux-persist';
 import { registerSW } from 'virtual:pwa-register'
 
 const updateSW = registerSW({
@@ -15,8 +16,13 @@ const updateSW = registerSW({
     console.log('App ready to work offline')
   },
 })
+
+let persistor = persistStore(store);
+
 createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <App />
+    <PersistGate persistor={persistor}>
+      <App />
+    </PersistGate>
   </Provider>,
 )
