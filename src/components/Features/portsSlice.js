@@ -42,6 +42,26 @@ const portsSlice = createSlice({
         nodes: updatedNodes,
       };
     }
+    ,
+    clearNodeSelections: (state) => {
+      state.nodes.forEach(node => {
+        node.isSelected = false;
+      });
+    },
+    setNodeSelection: (state, action) => {
+      const node = state.nodes.find(n => n.id === action.payload.id);
+      if (node) {
+        node.isSelected = action.payload.isSelected;
+      }
+    },
+    updateMultipleSelections: (state, action) => {
+      action.payload.forEach(update => {
+        const node = state.nodes.find(n => n.id === update.id);
+        if (node) {
+          node.isSelected = update.isSelected;
+        }
+      });
+    }
     
   
         
@@ -53,6 +73,6 @@ export const getNodePosition = (state, id) => {
   return node ? node.position : { x: 0, y: 0 }; // Default position if not found
 };
 
-export const { addNode,updateNodePosition ,toggleNodeSelection,removeNode} = portsSlice.actions;
+export const { addNode,updateNodePosition ,toggleNodeSelection,removeNode,clearNodeSelections,setNodeSelection,updateMultipleSelections} = portsSlice.actions;
 
 export default portsSlice.reducer

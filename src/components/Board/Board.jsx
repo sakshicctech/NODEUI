@@ -8,6 +8,7 @@ import Edge from '../Edges/Edge';
 import { updateNodePosition, addNode } from '../Features/portsSlice';
 import { addEdge, removeEdge, updateEdgePosition } from '../Features/edgesSlice';
 import resNodes from '../resources/resNodes';
+import SelectionBox from '../Selection/SelectionBox';
 
 const Board = () => {
   const [grabbingBoard, setGrabbingBoard] = useState(false);
@@ -217,6 +218,7 @@ const Board = () => {
            onMouseDown={handleMouseDownBoard}
            onMouseUp={handleMouseUpBoard}
            onMouseMove={handleMouseMove}>
+        <SelectionBox scale={scale} />
         <Button handleOnClick={() => {}} />
         {nodes.map((node) => (
           <Node 

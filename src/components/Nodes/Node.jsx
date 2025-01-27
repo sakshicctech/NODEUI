@@ -129,9 +129,12 @@ const Node = ({ node, onNodeUpdate, onPortClick, isDragging, edges }) => {
 
   return (
     <div
+      data-node-id={id}
       className={`${styles.node} ${isSelected ? styles.nodeSelected : ""}`}
-      style={{ left: `${position.x}px`, top: `${position.y}px`, position: "absolute" }}
+      style={{ left: `${position.x}px`, top: `${position.y}px`, position: "absolute" ,border: isSelected ? '2px solid #e38c29' : '1px solid #ccc',
+      zIndex: isSelected ? 100 : 1}}
       onMouseDown={handleMouseDown}
+      
     >
       <div className={styles.nodeContent}>{label}</div>
       {isSelected && (

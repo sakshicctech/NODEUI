@@ -21,7 +21,7 @@
 }
 
 .nodeSelected {
-  border: 2px solid #e38c29;
+  border: 2px solid #e38c29 !important;
   z-index: 100; /* Ensure selected node is more prominent */
 }
 
