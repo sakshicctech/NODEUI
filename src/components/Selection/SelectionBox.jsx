@@ -63,7 +63,9 @@ const SelectionBox = ({ scale = 1, isSpacePressed }) => {
     if (!board) return;
 
     const handleMouseDown = (e) => {
+      // Only start selection if not space-pressed and clicking directly on the board
       if (e.button === 0 && !isSpacePressed && e.target.id === 'board') {
+        e.stopPropagation(); // Prevent board dragging when selecting
         const point = getScaledBoardCoordinates(e.clientX, e.clientY);
         setStartPoint(point);
         setIsSelecting(true);

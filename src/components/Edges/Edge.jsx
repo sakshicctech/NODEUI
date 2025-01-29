@@ -8,16 +8,19 @@ const Edge = ({ edge, selected, onDelete, onClick }) => {
     y: position.y0 + (position.y1 - position.y0) / 2,
   });
 
+  // Update the middle point of the edge when the position changes
   useEffect(() => {
     const middleX = position.x0 + (position.x1 - position.x0) / 2;
     const middleY = position.y0 + (position.y1 - position.y0) / 2;
     setMiddlePoint({ x: middleX, y: middleY });
   }, [position]);
 
-  function calculateOffset(value) {
+  // Calculate the offset for the curve of the edge
+  const calculateOffset = (value) => {
     return value / 2;
-  }
+  };
 
+  // Handle edge deletion
   const handleDelete = useCallback(
     (event) => {
       event.stopPropagation();
@@ -26,6 +29,7 @@ const Edge = ({ edge, selected, onDelete, onClick }) => {
     [id, onDelete]
   );
 
+  // Handle edge click
   const handleClick = useCallback(
     (event) => {
       event.stopPropagation();
@@ -36,6 +40,7 @@ const Edge = ({ edge, selected, onDelete, onClick }) => {
 
   return (
     <svg className={styles.wrapper}>
+      {/* Render the edge path */}
       <path
         className={selected ? styles.edgeSelected : styles.edge}
         d={`M ${position.x0} ${position.y0} C ${position.x0 + calculateOffset(Math.abs(position.x1 - position.x0))} ${position.y0}, ${
@@ -43,6 +48,8 @@ const Edge = ({ edge, selected, onDelete, onClick }) => {
         } ${position.y1}, ${position.x1} ${position.y1}`}
         onClick={handleClick}
       />
+
+      {/* Render the delete button (visible only when the edge is selected) */}
       <g
         className={selected ? styles.delete : styles.deleteHidden}
         transform={`translate(${middlePoint.x}, ${middlePoint.y - (selected ? 24 : 0)})`}

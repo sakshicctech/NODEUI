@@ -17,38 +17,44 @@ const Node = ({ node, onNodeUpdate, onPortClick, isDragging, edges }) => {
     }
   }, [initialPosition, isDragging]);
 
-  const handleNodeDelete = useCallback((e) => {
-    e.stopPropagation();
-    // Get all edges connected to this node
-    const connectedEdges = edges.filter(
-      edge => edge.sourceNode === id || edge.targetNode === id
-    );
-    
-    // Delete all connected edges first
-    connectedEdges.forEach(edge => {
-      dispatch(removeEdge({ id: edge.id }));
-    });
-    
-    // Then delete the node
-    dispatch(removeNode({ id }));
-  }, [dispatch, id, edges]);
+  const handleNodeDelete = useCallback(
+    (e) => {
+      e.stopPropagation();
+      // Get all edges connected to this node
+      const connectedEdges = edges.filter(
+        (edge) => edge.sourceNode === id || edge.targetNode === id
+      );
 
-  const handleNodeAdd = useCallback((e) => {
-    e.stopPropagation();
-    // Create a new node with an offset from the current node's position
-    const newNode = {
-      id: `node-${Date.now()}`, // Generate unique ID
-      label: label, // Same label as current node
-      position: {
-        x: position.x + 100, // Offset by 100px to the right
-        y: position.y + 50   // Offset by 50px down
-      },
-      ports: { ...ports },   // Copy the same port configuration
-      isSelected: false
-    };
-    
-    dispatch(addNode(newNode));
-  }, [dispatch, label, position, ports]);
+      // Delete all connected edges first
+      connectedEdges.forEach((edge) => {
+        dispatch(removeEdge({ id: edge.id }));
+      });
+
+      // Then delete the node
+      dispatch(removeNode({ id }));
+    },
+    [dispatch, id, edges]
+  );
+
+  const handleNodeAdd = useCallback(
+    (e) => {
+      e.stopPropagation();
+      // Create a new node with an offset from the current node's position
+      const newNode = {
+        id: `node-${Date.now()}`, // Generate unique ID
+        label: label, // Same label as current node
+        position: {
+          x: position.x + 100, // Offset by 100px to the right
+          y: position.y + 50, // Offset by 50px down
+        },
+        ports: { ...ports }, // Copy the same port configuration
+        isSelected: false,
+      };
+
+      dispatch(addNode(newNode));
+    },
+    [dispatch, label, position, ports]
+  );
 
   const handleMouseDown = useCallback(
     (e) => {
@@ -66,12 +72,12 @@ const Node = ({ node, onNodeUpdate, onPortClick, isDragging, edges }) => {
       const onMouseMove = (moveEvent) => {
         const dx = moveEvent.clientX - startPos.x;
         const dy = moveEvent.clientY - startPos.y;
-        
+
         const newPos = {
           x: initialNodePos.x + dx,
-          y: initialNodePos.y + dy
+          y: initialNodePos.y + dy,
         };
-        
+
         setPosition(newPos);
         onNodeUpdate(id, newPos);
         moveEvent.preventDefault();
@@ -131,24 +137,22 @@ const Node = ({ node, onNodeUpdate, onPortClick, isDragging, edges }) => {
     <div
       data-node-id={id}
       className={`${styles.node} ${isSelected ? styles.nodeSelected : ""}`}
-      style={{ left: `${position.x}px`, top: `${position.y}px`, position: "absolute" ,border: isSelected ? '2px solid #e38c29' : '1px solid #ccc',
-      zIndex: isSelected ? 100 : 1}}
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        position: "absolute",
+        border: isSelected ? "2px solid #e38c29" : "1px solid #ccc",
+        zIndex: isSelected ? 100 : 1,
+      }}
       onMouseDown={handleMouseDown}
-      
     >
       <div className={styles.nodeContent}>{label}</div>
       {isSelected && (
         <div>
-          <button
-            className={styles.deleteButton}
-            onClick={handleNodeDelete}
-          >
+          <button className={styles.deleteButton} onClick={handleNodeDelete}>
             <DeleteIcon />
           </button>
-          <button 
-            className={styles.addButton}
-            onClick={handleNodeAdd}
-          >
+          <button className={styles.addButton} onClick={handleNodeAdd}>
             <AddIcon />
           </button>
         </div>
