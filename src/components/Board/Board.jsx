@@ -5,12 +5,14 @@ import { decrement, increment } from '../Features/zoomSlice';
 import Button from '../Button/Button';
 import Node from '../Nodes/Node';
 import Edge from '../Edges/Edge';
+import Checkbox from './Checkbox';
 import { updateNodePosition, addNode } from '../Features/portsSlice';
 import { addEdge, removeEdge, updateEdgePosition } from '../Features/edgesSlice';
 import resNodes from '../resources/resNodes';
 import SelectionBox from '../Selection/SelectionBox';
 
 const Board = () => {
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [grabbingBoard, setGrabbingBoard] = useState(false);
   const [clickedPosition, setClickedPosition] = useState({ x: -1, y: -1 });
   const [currentlySelectedNode, setCurrentlySelectedNode] = useState(null);
@@ -135,11 +137,13 @@ const Board = () => {
 
   const handleMouseDownBoard = useCallback((event) => {
     if (!event.target.classList.contains(styles.port)) {
-      setClickedPosition({ x: event.clientX, y: event.clientY });
-      setGrabbingBoard(true);
+      if (!isSelectionMode) {
+        setClickedPosition({ x: event.clientX, y: event.clientY });
+        setGrabbingBoard(true);
+      }
       setSelectedEdgeId(null);
     }
-  }, []);
+  }, [isSelectionMode]);
 
   const handleMouseUpBoard = useCallback(() => {
     setClickedPosition({ x: -1, y: -1 });
@@ -148,33 +152,29 @@ const Board = () => {
   }, []);
 
   const handleMouseMove = useCallback((event) => {
-    if (clickedPosition.x >= 0 && clickedPosition.y >= 0) {
+    if (clickedPosition.x >= 0 && clickedPosition.y >= 0 && !isSelectionMode) {
       const boardElement = document.getElementById('boardWrapper');
       boardElement?.scrollBy(-event.movementX, -event.movementY);
       setClickedPosition({ x: event.clientX, y: event.clientY });
     }
-  }, [clickedPosition]);
+  }, [clickedPosition, isSelectionMode]);
 
   const handlePortClick = useCallback((nodeId, side, portIndex, nodePosition) => {
     const node = nodes.find(n => n.id === nodeId);
     if (!node) return;
 
     const portPosition = calculatePortPosition(nodePosition, side, portIndex, node.ports[side]);
-    console.log("portPosition", portPosition);
 
     if (currentlySelectedNode) {
-      // Prevent self-connection
       if (currentlySelectedNode.id === nodeId) {
         setCurrentlySelectedNode(null);
         return;
       }
-      // Prevent duplicate connections
+
       const isDuplicate = edges.some(edge => 
-        console.log("edge", edge)
-
+        (edge.sourceNode === currentlySelectedNode.id && edge.targetNode === nodeId) ||
+        (edge.sourceNode === nodeId && edge.targetNode === currentlySelectedNode.id)
       );
-
-      console.log("isDuplicate", isDuplicate);
 
       if (!isDuplicate) {
         dispatch(addEdge({
@@ -207,8 +207,23 @@ const Board = () => {
     setSelectedEdgeId(edgeId);
   }, []);
 
+  const checkboxStyle = {
+    position: 'fixed',
+    right: '10px', 
+    bottom: '10px' 
+};
+
   return (
+    <div >
+    <div style={checkboxStyle}>
+      <Checkbox
+        label="Selection Mode"
+        checked={isSelectionMode}
+        onChange={(e) => setIsSelectionMode(e.target.checked)}
+      />
+      </div >
     <div id="boardWrapper" className={styles.wrapper}>
+      
       <div id="board"
            className={`${styles.board} ${grabbingBoard ? styles.boardDragging : ''}`}
            style={{
@@ -218,7 +233,7 @@ const Board = () => {
            onMouseDown={handleMouseDownBoard}
            onMouseUp={handleMouseUpBoard}
            onMouseMove={handleMouseMove}>
-        <SelectionBox scale={scale} />
+        <SelectionBox scale={scale} isSelectionMode={isSelectionMode} />
         <Button handleOnClick={() => {}} />
         {nodes.map((node) => (
           <Node 
@@ -240,6 +255,7 @@ const Board = () => {
           />
         ))}
       </div>
+    </div>
     </div>
   );
 };

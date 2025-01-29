@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateMultipleSelections, clearNodeSelections } from '../Features/portsSlice';
 
-const SelectionBox = ({ scale = 1, isSpacePressed }) => {
+const SelectionBox = ({ scale = 1, isSelectionMode }) => {
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectionBox, setSelectionBox] = useState(null);
   const [startPoint, setStartPoint] = useState({ x: 0, y: 0 });
@@ -63,7 +63,7 @@ const SelectionBox = ({ scale = 1, isSpacePressed }) => {
     if (!board) return;
 
     const handleMouseDown = (e) => {
-      if (e.button === 0 && !isSpacePressed && e.target.id === 'board') {
+      if (e.button === 0 && isSelectionMode && e.target.id === 'board') {
         const point = getScaledBoardCoordinates(e.clientX, e.clientY);
         setStartPoint(point);
         setIsSelecting(true);
@@ -101,7 +101,7 @@ const SelectionBox = ({ scale = 1, isSpacePressed }) => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isSelecting, startPoint, dispatch, getScaledBoardCoordinates, selectNodes, isSpacePressed]);
+  }, [isSelecting, startPoint, dispatch, getScaledBoardCoordinates, selectNodes, isSelectionMode]);
 
   if (!selectionBox) return null;
 
