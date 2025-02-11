@@ -207,22 +207,19 @@ const Board = () => {
     setSelectedEdgeId(edgeId);
   }, []);
 
-  const checkboxStyle = {
-    position: 'fixed',
-    right: '10px', 
-    bottom: '10px' 
-};
+   
 
   return (
-    <div >
-    <div style={checkboxStyle}>
-      <Checkbox
-        label="Selection Mode"
-        checked={isSelectionMode}
-        onChange={(e) => setIsSelectionMode(e.target.checked)}
-      />
-      </div >
+    
+    
     <div id="boardWrapper" className={styles.wrapper}>
+      <div className={styles.checkboxContainer}>
+        <Checkbox
+          label="Selection Mode"
+          checked={isSelectionMode}
+          onChange={(e) => setIsSelectionMode(e.target.checked)}
+        />
+      </div>
       
       <div id="board"
            className={`${styles.board} ${grabbingBoard ? styles.boardDragging : ''}`}
@@ -255,7 +252,6 @@ const Board = () => {
           />
         ))}
       </div>
-    </div>
     </div>
   );
 };

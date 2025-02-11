@@ -1,22 +1,16 @@
 // Checkbox.js
-import React from 'react';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-
-const StyledCheckbox = ({ label, checked, onChange }) => {
+const Checkbox = ({ label, checked, onChange }) => {
   return (
-    <FormControlLabel
-      control={
-        <Checkbox
-          checked={checked}
-          onChange={onChange}
-          color="primary" 
-        />
-      }
-      label={label}
-      labelPlacement="end" 
-    />
+    <label className="flex items-center gap-2 p-3 bg-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition-colors">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        className="form-checkbox w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+      />
+      <span className="text-sm font-medium">{label}</span>
+    </label>
   );
 };
 
-export default StyledCheckbox;
+export default Checkbox;
